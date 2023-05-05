@@ -1,4 +1,5 @@
 <?php
+
 include 'connect.php';
 
 if(isset($_COOKIE['user_id'])){
@@ -7,38 +8,23 @@ if(isset($_COOKIE['user_id'])){
    setcookie('user_id', create_unique_id(), time() + 60*60*24*30);
 }
 
-if(isset($_POST['add_to_cart'])){
+if(isset($_GET['get_id'])){
+   $get_id = $_GET['get_id'];
+}else{
+   $get_id = '';
+   header('location:orders.php');
+}
 
-   $id = create_unique_id();
-   $product_id = $_POST['product_id'];
-   $product_id = filter_var($product_id, FILTER_SANITIZE_STRING);
-   $qty = $_POST['qty'];
-   $qty = filter_var($qty, FILTER_SANITIZE_STRING);
-   
-   $verify_cart = $conn->prepare("SELECT * FROM `cart` WHERE user_id = ? AND product_id = ?");   
-   $verify_cart->execute([$user_id, $product_id]);
+if(isset($_POST['cancel'])){
 
-   $max_cart_items = $conn->prepare("SELECT * FROM `cart` WHERE user_id = ?");
-   $max_cart_items->execute([$user_id]);
-
-   if($verify_cart->rowCount() > 0){
-      $warning_msg[] = 'Already added to cart!';
-   }elseif($max_cart_items->rowCount() == 10){
-      $warning_msg[] = 'Cart is full!';
-   }else{
-
-      $select_price = $conn->prepare("SELECT * FROM `products` WHERE id = ? LIMIT 1");
-      $select_price->execute([$product_id]);
-      $fetch_price = $select_price->fetch(PDO::FETCH_ASSOC);
-
-      $insert_cart = $conn->prepare("INSERT INTO `cart`(id, user_id, product_id, price, qty) VALUES(?,?,?,?,?)");
-      $insert_cart->execute([$id, $user_id, $product_id, $fetch_price['price'], $qty]);
-      $success_msg[] = 'Added to cart!';
-   }
+   $update_orders = $conn->prepare("UPDATE `orders` SET status = ? WHERE id = ?");
+   $update_orders->execute(['canceled', $get_id]);
+   header('location:orders.php');
 
 }
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -79,7 +65,7 @@ if(isset($_POST['add_to_cart'])){
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.php">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" aria-current="page" href="index.php">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
 						<li class="nav-item"><a class="nav-link" href="contact.php">Contact us</a></li>
                         <li class="nav-item dropdown">
@@ -91,12 +77,12 @@ if(isset($_POST['add_to_cart'])){
                             </ul>
                         </li>
 						  <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">User</a>
+                            <a class="nav-link dropdown-toggle active" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">User</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item disabled" href="login.php">Login</a></li>
 								 <li><a class="dropdown-item disabled" href="signup.php">Signup</a></li>
                                 <li><hr class="dropdown-divider" /></li>
-                                <li><a class="dropdown-item" href="orders.php">Orders</a></li>
+                                <li><a class="dropdown-item active" href="orders.php">Orders</a></li>
                              
                             </ul>
                         </li>
@@ -105,76 +91,77 @@ if(isset($_POST['add_to_cart'])){
                 </div>
             </div>
         </nav>
-        <!-- Header-->
-		<div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="images/c-1.jpg" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="images/c2.jpg" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="images/c3.jpg" class="d-block w-100" alt="...">
-    </div>
-  </div>
-</div>
-      
-        <!-- Section-->
-		<?php 
-      $select_products = $conn->prepare("SELECT * FROM `products`");
-      $select_products->execute();
-      if($select_products->rowCount() > 0){
-         while($fetch_prodcut = $select_products->fetch(PDO::FETCH_ASSOC)){
-   ?>
-		   <form action="" method="POST" style="height: 40%;"> 	
-			   <section class="py-5">
-			 
-            <div class="container">
-                <div class="row">
-                    <div class="col mb-5">
-                        <div class="card h-100">
-							<!-- Sale badge-->
-                            <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
-						   <!-- Product image-->
-							<div class="text-center">
-								  <img src="uploaded_files/<?= $fetch_prodcut['image']; ?>" class="card-img-top" alt="" >
-                            
-                            <!-- Product details-->
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <!-- Product name-->
-                                    <h5 class="fw-bolder"><?= $fetch_prodcut['name'] ?></h5>
-									<input type="hidden" name="product_id" value="<?= $fetch_prodcut['id']; ?>">
-                                    <!-- Product price-->
-                                    RM <?= $fetch_prodcut['price'] ?>
-                                <br/>
-									<br/>
-								<input type="number" name="qty" required min="1" value="1" max="99" maxlength="2" class="text-center" />
-                       </div> </div>
-                            <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-								
-                                <div class="text-center">
-								<input type="submit" name="add_to_cart" value="Add to cart" class="btn btn-outline-dark mt-auto" style="width: auto;"><br/>
-									<br/>
-      			<a href="checkout.php?get_id=<?= $fetch_prodcut['id']; ?>" class="btn btn-outline-dark mt-auto" style="width: auto;">Buy now</a>
-										</div>
-                            </div>
-                        </div>
-                   
-					</section>				
-   </form>
-  
+    <br/>  <br/>
+    
+<section>
+	
+
+   <div class="container">
+<h2>Order Details</h2>
    <?php
+      $grand_total = 0;
+      $select_orders = $conn->prepare("SELECT * FROM `orders` WHERE id = ? LIMIT 1");
+      $select_orders->execute([$get_id]);
+      if($select_orders->rowCount() > 0){
+         while($fetch_order = $select_orders->fetch(PDO::FETCH_ASSOC)){
+            $select_product = $conn->prepare("SELECT * FROM `products` WHERE id = ? LIMIT 1");
+            $select_product->execute([$fetch_order['product_id']]);
+            if($select_product->rowCount() > 0){
+               while($fetch_product = $select_product->fetch(PDO::FETCH_ASSOC)){
+                  $sub_total = ($fetch_order['price'] * $fetch_order['qty']);
+                  $grand_total += $sub_total;
+   ?>
+	    <div class="row d-flex justify-content-center align-items-center">
+      <div class="col">
+        <div class="card shopping-cart" style="border-radius: 15px;">
+          <div class="card-body text-black">
+
+            <div class="row">
+              <div class="col-lg-6 px-5 py-4">
+
+         <p class="title"><i class="fas fa-calendar"></i><?= $fetch_order['date']; ?></p>
+         <img src="uploaded_files/<?= $fetch_product['image']; ?>" class="image" alt="" width="30%">
+         <p class="price">RM <?= $fetch_order['price']; ?> x <?= $fetch_order['qty']; ?></p>
+         <h3 class="name"><?= $fetch_product['name']; ?></h3>
+         <p class="grand-total">Total : <span>RM <?= $grand_total; ?></span></p>
+      </div>
+			
+	     <div class="col-lg-6 px-5 py-4">
+
+                <h3 class="mb-5 pt-2 text-left fw-bold text-uppercase">Billing details</h3>
+
+         <p class="user"><i class="fas fa-user"></i> <?= $fetch_order['name']; ?></p>
+         <p class="user"><i class="fas fa-phone"></i> <?= $fetch_order['number']; ?></p>
+         <p class="user"><i class="fas fa-envelope"></i> <?= $fetch_order['email']; ?></p>
+         <p class="user"><i class="fas fa-map-marker-alt"></i> <?= $fetch_order['address']; ?></p>
+         <p class="title">Status</p>
+         <p class="status" style="color:<?php if($fetch_order['status'] == 'delivered'){echo 'green';}elseif($fetch_order['status'] == 'canceled'){echo 'red';}else{echo 'orange';}; ?>"><?= $fetch_order['status']; ?></p>
+         <?php if($fetch_order['status'] == 'canceled'){ ?>
+            <a href="checkout.php?get_id=<?= $fetch_product['id']; ?>" class="btn btn-outline-dark">Order again</a>
+         <?php }else{ ?>
+         <form action="" method="POST">
+            <input type="submit" value="cancel order" name="cancel" class="btn btn-outline-dark" onclick="return confirm('cancel this order?');">
+         </form>
+         <?php } ?>
+      </div>
+   </div>
+   <?php
+            }
+         }else{
+            echo '<p class="empty">product not found!</p>';
+         }
       }
-	  }
-   else{
-      echo '<p class="empty">no products found!</p>';
+   }else{
+      echo '<p class="empty">no orders found!</p>';
    }
    ?>
-								
-				  
+
+   </div>
+
+  
+</section>
+	<br/>
+	
         <!-- Footer -->
 <footer class="text-center text-lg-start bg-dark text-muted">
   <!-- Section: Social media -->

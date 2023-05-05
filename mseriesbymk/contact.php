@@ -55,8 +55,93 @@ if(isset($_POST['add_to_cart'])){
         <link href="css/styles.css" rel="stylesheet" />
 		<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+  <style>
 
-   
+.form{
+	width: 40%;
+	background-color: white;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	
+}
+.form h1{
+	text-align: center;
+	margin-bottom: 20px;
+	width: 100%;
+}
+.form form{
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+}
+.flex-rev {
+    display: flex;
+    flex-direction: column-reverse;
+    margin-bottom: 10px;
+		width: 100%;
+}
+
+.flex-rev input, .flex-rev textarea {
+    border: none;
+    background-color: #e6e6e6;
+    padding: 12px 10px;
+    font-size: 16px;
+    resize: none;
+    margin-top: 7px;
+    margin-bottom: 16px;
+    border-radius: 5px;
+    color: #243342;
+    outline-color: #243342;
+    outline-width: thin;
+	 -webkit-appearance: none;
+}
+.flex-rev textarea{
+	height: 150px;
+}
+button{
+	-webkit-appearance: none;
+	margin-right: 0;
+}
+
+
+
+
+@media screen and (max-width: 900px){
+	.content{
+		padding: 10px 0 0;
+		display: block;
+	}
+	.map{
+		display: none;
+	}
+	.contact{
+		width: 100%;
+		flex-direction: column-reverse;
+		border-radius: 0;
+		box-shadow: 0px 0px 0px 0px;
+	}
+	.other{
+		width: 100%;
+		padding: 20px 0;
+	}
+	.form{
+		width: 100%;
+	}
+}
+
+@media screen and (max-height: 660px){
+	.content{
+		align-items: flex-start;
+	}
+}
+
+
+		
+		</style>
+		
     </head>
     <body>
         <!-- Navigation-->
@@ -79,14 +164,14 @@ if(isset($_POST['add_to_cart'])){
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.php">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" aria-current="page" href="index.php">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
-						<li class="nav-item"><a class="nav-link" href="contact.php">Contact us</a></li>
+						<li class="nav-item"><a class="nav-link active" href="contact.php">Contact us</a></li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" href="tnc.php">Terms & Condition</a></li>
-                                
+                               
                                
                             </ul>
                         </li>
@@ -105,76 +190,33 @@ if(isset($_POST['add_to_cart'])){
                 </div>
             </div>
         </nav>
-        <!-- Header-->
-		<div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="images/c-1.jpg" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="images/c2.jpg" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="images/c3.jpg" class="d-block w-100" alt="...">
-    </div>
-  </div>
+<br/>
+
+<div class="content" align="center">
+	
+		<div class="form" align="left">
+			<h1>Get In Touch</h1>
+			<form action="">
+				<div class="flex-rev">
+					<input type="text" placeholder="Connor Gaunt" name="name" id="name" />
+					<label for="name">Full Name</label>
+				</div>
+				<div class="flex-rev">
+					<input type="email" placeholder="connor@connorgaunt.com" name="email" id="email" />
+					<label for="email">Your Email</label>
+				</div>
+
+				<div class="flex-rev">
+					<textarea placeholder="I have an idea for a project...." name="message" id="message" /></textarea>
+					<label for="message">Email Message</label>
+				</div>
+				<button class="btn btn-outline-dark text-center">Send Email</button>
+			</form>
+		</div>
+	</div>
 </div>
-      
-        <!-- Section-->
-		<?php 
-      $select_products = $conn->prepare("SELECT * FROM `products`");
-      $select_products->execute();
-      if($select_products->rowCount() > 0){
-         while($fetch_prodcut = $select_products->fetch(PDO::FETCH_ASSOC)){
-   ?>
-		   <form action="" method="POST" style="height: 40%;"> 	
-			   <section class="py-5">
-			 
-            <div class="container">
-                <div class="row">
-                    <div class="col mb-5">
-                        <div class="card h-100">
-							<!-- Sale badge-->
-                            <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
-						   <!-- Product image-->
-							<div class="text-center">
-								  <img src="uploaded_files/<?= $fetch_prodcut['image']; ?>" class="card-img-top" alt="" >
-                            
-                            <!-- Product details-->
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <!-- Product name-->
-                                    <h5 class="fw-bolder"><?= $fetch_prodcut['name'] ?></h5>
-									<input type="hidden" name="product_id" value="<?= $fetch_prodcut['id']; ?>">
-                                    <!-- Product price-->
-                                    RM <?= $fetch_prodcut['price'] ?>
-                                <br/>
-									<br/>
-								<input type="number" name="qty" required min="1" value="1" max="99" maxlength="2" class="text-center" />
-                       </div> </div>
-                            <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-								
-                                <div class="text-center">
-								<input type="submit" name="add_to_cart" value="Add to cart" class="btn btn-outline-dark mt-auto" style="width: auto;"><br/>
-									<br/>
-      			<a href="checkout.php?get_id=<?= $fetch_prodcut['id']; ?>" class="btn btn-outline-dark mt-auto" style="width: auto;">Buy now</a>
-										</div>
-                            </div>
-                        </div>
-                   
-					</section>				
-   </form>
-  
-   <?php
-      }
-	  }
-   else{
-      echo '<p class="empty">no products found!</p>';
-   }
-   ?>
-								
-				  
+</div>
+   <br/>
         <!-- Footer -->
 <footer class="text-center text-lg-start bg-dark text-muted">
   <!-- Section: Social media -->

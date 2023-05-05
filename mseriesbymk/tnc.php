@@ -55,7 +55,11 @@ if(isset($_POST['add_to_cart'])){
         <link href="css/styles.css" rel="stylesheet" />
 		<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
-
+<style>
+	
+		
+		
+</style>
    
     </head>
     <body>
@@ -79,15 +83,14 @@ if(isset($_POST['add_to_cart'])){
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.php">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" aria-current="page" href="index.php">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
 						<li class="nav-item"><a class="nav-link" href="contact.php">Contact us</a></li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
+                            <a class="nav-link dropdown-toggle active" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Help</a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="tnc.php">Terms & Condition</a></li>
+                                <li><a class="dropdown-item active" href="tnc.php">Terms & Condition</a></li>
                                 
-                               
                             </ul>
                         </li>
 						  <li class="nav-item dropdown">
@@ -105,76 +108,57 @@ if(isset($_POST['add_to_cart'])){
                 </div>
             </div>
         </nav>
-        <!-- Header-->
-		<div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="images/c-1.jpg" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="images/c2.jpg" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="images/c3.jpg" class="d-block w-100" alt="...">
-    </div>
-  </div>
-</div>
-      
-        <!-- Section-->
-		<?php 
-      $select_products = $conn->prepare("SELECT * FROM `products`");
-      $select_products->execute();
-      if($select_products->rowCount() > 0){
-         while($fetch_prodcut = $select_products->fetch(PDO::FETCH_ASSOC)){
-   ?>
-		   <form action="" method="POST" style="height: 40%;"> 	
-			   <section class="py-5">
-			 
-            <div class="container">
-                <div class="row">
-                    <div class="col mb-5">
-                        <div class="card h-100">
-							<!-- Sale badge-->
-                            <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
-						   <!-- Product image-->
-							<div class="text-center">
-								  <img src="uploaded_files/<?= $fetch_prodcut['image']; ?>" class="card-img-top" alt="" >
-                            
-                            <!-- Product details-->
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <!-- Product name-->
-                                    <h5 class="fw-bolder"><?= $fetch_prodcut['name'] ?></h5>
-									<input type="hidden" name="product_id" value="<?= $fetch_prodcut['id']; ?>">
-                                    <!-- Product price-->
-                                    RM <?= $fetch_prodcut['price'] ?>
-                                <br/>
-									<br/>
-								<input type="number" name="qty" required min="1" value="1" max="99" maxlength="2" class="text-center" />
-                       </div> </div>
-                            <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-								
-                                <div class="text-center">
-								<input type="submit" name="add_to_cart" value="Add to cart" class="btn btn-outline-dark mt-auto" style="width: auto;"><br/>
-									<br/>
-      			<a href="checkout.php?get_id=<?= $fetch_prodcut['id']; ?>" class="btn btn-outline-dark mt-auto" style="width: auto;">Buy now</a>
-										</div>
-                            </div>
-                        </div>
-                   
-					</section>				
-   </form>
-  
-   <?php
-      }
-	  }
-   else{
-      echo '<p class="empty">no products found!</p>';
-   }
-   ?>
-								
-				  
+     
+		<br/>
+		<br/>
+		<div class="container">
+   <header class="header" >
+        <h1 class="title">Terms of Service (Sample)</h1>
+    </header>
+
+    <div class="content">
+        <p>These Terms of Use constitute a legally binding agreement made by M Series, refers ("we," "us" or "our") to M Series e-commerce website as well as any other media form, media channel, mobile website or mobile application related, linked, or otherwise connected thereto (collectively, the "Site").</p>
+<ol>
+<li><strong>Application of Terms</strong>
+<ol>
+<li>You agree that by accessing this Site, you have read, understood, and agree to be bound by all of these Terms of Use. If you do not agree with all of these Terms of Use, then you are expressly prohibited from using this Site and you must discontinue use immediately. </li>
+</ol>
+</li>
+<li><strong>Intellectual Property Rights</strong>
+<ol>
+<li>Unless otherwise indicated, the Site is our proprietary property and all source code,
+databases, functionality, software, website designs, audio, video, text, photographs, and graphics on the Site (collectively, the "Content") and the trademarks, service marks, and logos contained therein (the "Marks") are owned or controlled by us or licensed to us, and are protected by copyright and trademark laws and various other intellectual property rights and unfair competition laws of the United States, foreign jurisdictions, and international conventions. </li>
+</ol>
+</li>
+<li><strong>Security &amp; Payments</strong>
+<ol>
+<li>All payments are processed securely through Credit Card or Cash on Delivery. M Series by MK does not directly process payments through the website.</li>
+</ol>
+</li>
+<li><strong>Refunds</strong>
+<ol>
+<li>You have 14 days to evaluate your purchase. If your purchase fails to meet expectations set by the seller, or is critically flawed in some way, contact M Series by MK and we will issue a full refund pending a review.</li>
+
+</ol>
+</li>
+<li><strong>Shipping</strong>
+<ol>
+<li>You will be responsible for paying for your own shipping costs for returning your item. Shipping costs are non-refundable.
+
+If you receive a refund, the cost of return shipping will be deducted from your refund.
+</li>
+</ol>
+</li>
+
+<li><strong>Changes to terms</strong>
+<ol>
+<li>If we change our terms of use we will post on this page.</li>
+</ol>
+</li>
+</ol>
+                    </div></div>
+		
+		<br/>
         <!-- Footer -->
 <footer class="text-center text-lg-start bg-dark text-muted">
   <!-- Section: Social media -->

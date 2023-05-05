@@ -1,0 +1,17 @@
+                         : : : : : DETAILS : : : : : 
+
+
+>> NOTE : (for admin panel)
+>>Enter the following link for Admin Panel.
+
+Admin add product : http://localhost/mseriesbymk/admin_add_product.php
+
+User : http://localhost/mseriesbymk/index.php
+
+DON'T FORGET TO CREATE A DATABASE NAMING "mseries2" AND IMPORT THE SQL FILE TO RUN.
+WITHOUT THE DATABASE THE PROJECT WON'T RUN.
+
+>>DATABASE FILE IS INSIDE "database-sql" FOLDER!
+
+
+#THANK YOU FOR DOWNLOADING

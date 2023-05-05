@@ -7,33 +7,29 @@ if(isset($_COOKIE['user_id'])){
    setcookie('user_id', create_unique_id(), time() + 60*60*24*30);
 }
 
-if(isset($_POST['add_to_cart'])){
+if(isset($_POST['add'])){
 
    $id = create_unique_id();
-   $product_id = $_POST['product_id'];
-   $product_id = filter_var($product_id, FILTER_SANITIZE_STRING);
-   $qty = $_POST['qty'];
-   $qty = filter_var($qty, FILTER_SANITIZE_STRING);
-   
-   $verify_cart = $conn->prepare("SELECT * FROM `cart` WHERE user_id = ? AND product_id = ?");   
-   $verify_cart->execute([$user_id, $product_id]);
+   $name = $_POST['name'];
+   $name = filter_var($name, FILTER_SANITIZE_STRING);
+   $price = $_POST['price'];
+   $price = filter_var($price, FILTER_SANITIZE_STRING);
 
-   $max_cart_items = $conn->prepare("SELECT * FROM `cart` WHERE user_id = ?");
-   $max_cart_items->execute([$user_id]);
+   $image = $_FILES['image']['name'];
+   $image = filter_var($image, FILTER_SANITIZE_STRING);
+   $ext = pathinfo($image, PATHINFO_EXTENSION);
+   $rename = create_unique_id().'.'.$ext;
+   $image_tmp_name = $_FILES['image']['tmp_name'];
+   $image_size = $_FILES['image']['size'];
+   $image_folder = 'uploaded_files/'.$rename;
 
-   if($verify_cart->rowCount() > 0){
-      $warning_msg[] = 'Already added to cart!';
-   }elseif($max_cart_items->rowCount() == 10){
-      $warning_msg[] = 'Cart is full!';
+   if($image_size > 2000000){
+      $warning_msg[] = 'Image size is too large!';
    }else{
-
-      $select_price = $conn->prepare("SELECT * FROM `products` WHERE id = ? LIMIT 1");
-      $select_price->execute([$product_id]);
-      $fetch_price = $select_price->fetch(PDO::FETCH_ASSOC);
-
-      $insert_cart = $conn->prepare("INSERT INTO `cart`(id, user_id, product_id, price, qty) VALUES(?,?,?,?,?)");
-      $insert_cart->execute([$id, $user_id, $product_id, $fetch_price['price'], $qty]);
-      $success_msg[] = 'Added to cart!';
+      $add_product = $conn->prepare("INSERT INTO `products`(id, name, price, image) VALUES(?,?,?,?)");
+      $add_product->execute([$id, $name, $price, $rename]);
+      move_uploaded_file($image_tmp_name, $image_folder);
+      $success_msg[] = 'Product added!';
    }
 
 }
@@ -79,7 +75,7 @@ if(isset($_POST['add_to_cart'])){
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="index.php">Home</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="admin_add_product.php">Admin Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
 						<li class="nav-item"><a class="nav-link" href="contact.php">Contact us</a></li>
                         <li class="nav-item dropdown">
@@ -119,61 +115,43 @@ if(isset($_POST['add_to_cart'])){
     </div>
   </div>
 </div>
+      <br/>
+
+<section>
+ <div class="container">
+	  <h2>Add Product</h2>
+    <div class="row d-flex justify-content-center align-items-center">
+      <div class="col">
+        <div class="card shopping-cart" style="border-radius: 15px;">
+          <div class="card-body text-black">
+
+            <div class="row">
+              <div class="col-lg-6 px-5 py-4">
+
+                <h3 class="mb-5 pt-2 text-left fw-bold text-uppercase">Product Info</h3>
+   <form action="" method="POST" enctype="multipart/form-data" class="mb-5">
+       <div class="form-outline mb-5">
+						  <label class="form-label" for="typeName">Product Name <span style="color: red;">*</span></label>
+                    <input type="text" id="typeName" name="name" class="form-control form-control-lg" size="17" placeholder="Enter product name"/>
+                    
+                  </div>
+	   <div class="form-outline mb-5">
+						  <label class="form-label" for="typePrice">Product Price <span style="color: red;">*</span></label>
+                    <input type="number" id="typePrice" name="price" class="form-control form-control-lg" size="17" placeholder="e.g. 16" minlength="19" maxlength="50"/>
+                    
+                  </div>
+      <div class="form-outline mb-5">
+						  <label class="form-label" for="typeImage">Product Image <span style="color: red;">*</span></label>
+                    <input type="file" id="typeImage" name="image" accept="uploaded_files/*" class="form-control form-control-lg" size="17"/>
+                    
+                  </div>
       
-        <!-- Section-->
-		<?php 
-      $select_products = $conn->prepare("SELECT * FROM `products`");
-      $select_products->execute();
-      if($select_products->rowCount() > 0){
-         while($fetch_prodcut = $select_products->fetch(PDO::FETCH_ASSOC)){
-   ?>
-		   <form action="" method="POST" style="height: 40%;"> 	
-			   <section class="py-5">
-			 
-            <div class="container">
-                <div class="row">
-                    <div class="col mb-5">
-                        <div class="card h-100">
-							<!-- Sale badge-->
-                            <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
-						   <!-- Product image-->
-							<div class="text-center">
-								  <img src="uploaded_files/<?= $fetch_prodcut['image']; ?>" class="card-img-top" alt="" >
-                            
-                            <!-- Product details-->
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <!-- Product name-->
-                                    <h5 class="fw-bolder"><?= $fetch_prodcut['name'] ?></h5>
-									<input type="hidden" name="product_id" value="<?= $fetch_prodcut['id']; ?>">
-                                    <!-- Product price-->
-                                    RM <?= $fetch_prodcut['price'] ?>
-                                <br/>
-									<br/>
-								<input type="number" name="qty" required min="1" value="1" max="99" maxlength="2" class="text-center" />
-                       </div> </div>
-                            <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-								
-                                <div class="text-center">
-								<input type="submit" name="add_to_cart" value="Add to cart" class="btn btn-outline-dark mt-auto" style="width: auto;"><br/>
-									<br/>
-      			<a href="checkout.php?get_id=<?= $fetch_prodcut['id']; ?>" class="btn btn-outline-dark mt-auto" style="width: auto;">Buy now</a>
-										</div>
-                            </div>
-                        </div>
-                   
-					</section>				
+      <input type="submit" class="btn btn-dark btn-block btn-lg" name="add" value="Add Product">
    </form>
-  
-   <?php
-      }
-	  }
-   else{
-      echo '<p class="empty">no products found!</p>';
-   }
-   ?>
-								
+
+</section>
+
+   		<br/>
 				  
         <!-- Footer -->
 <footer class="text-center text-lg-start bg-dark text-muted">
